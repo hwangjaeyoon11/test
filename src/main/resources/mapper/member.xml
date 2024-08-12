@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mbc.day03.domain.MemberDao">
+    <select id="getList" resultType="MemberVo">
+        select mid, id, name, gender,
+        DATE_FORMAT(birthday, '%Y-%m-%d') as birthday
+        from member2
+    </select>
+    <select id="memberSearch" resultType="MemberVo">
+        select mid, id, pw, name, gender,
+        DATE_FORMAT(birthday, '%Y-%m-%d') as birthday
+        from member2
+        where 1=1
+        <![CDATA[
+        and birthday >= DATE_FORMAT(#{sDate}, '%Y%m%d')
+        and birthday < DATE_FORMAT(#{eDate}, '%Y%m%d')
+        ]]>
+
+        <if test="name != 'All'">
+            and name like concat(#{name}, '%')
+        </if>
+        <if test="gender != 'All'">
+            and gender = #{gender}
+        </if>
+    </select>
+
+    <!--    회원 등록-->
+    <insert id="memberInsert">
+        insert into member2(id, pw, name, gender, birthday)
+        values(#{id}, #{pw}, #{name}, #{gender}, #{birthday})
+    </insert>
+    <!--    회원정보 가져오기-->
+    <select id="getMember" resultType="MemberVo">
+        select mid, id, pw, name, gender,
+        DATE_FORMAT(birthday, '%Y-%m-%d') as birthday
+        from member2
+        where mid = CAST(#{mid} as SIGNED)
+    </select>
+    <!--    회원 수정-->
+    <update id="memberModify">
+        update member2
+        set
+        name = #{name},
+        gender = #{gender},
+        birthday = DATE_FORMAT(#{birthday}, '%Y%m%d')
+        where mid = CAST(#{mid} as SIGNED)
+    </update>
+</mapper>
